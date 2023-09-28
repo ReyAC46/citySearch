@@ -83,7 +83,7 @@ if not start_city in map:    # Check if the start city actually exists on the ma
 output = depth_first(start_city, goal_city)     # Call the depth first function
 
 if output is None:      # Check if the goal has been found the function
-    print("DFS did not find a path")
+    print(f"There is no existing path between {start_city} and {goal_city}")
     exit()      # Exit the program if goal has not been found
 
 path = []   # Create empty list to display the shortest path
