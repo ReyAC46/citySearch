@@ -76,7 +76,7 @@ if not start_city in map:   # Check if the start city actually exists on the map
     print("The city does not exist on the map!")
     exit()
 goal_city = input("Enter goal city\n")   # Take input of the goal city
-if not start_city in map:    # Check if the start city actually exists on the map
+if not goal_city in map:    # Check if the start city actually exists on the map
     print("The city does not exist on the map!")
     exit()
 
