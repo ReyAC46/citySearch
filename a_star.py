@@ -1,5 +1,12 @@
 from queue import Queue
 
+# A-star defined: f(n) = g(n) + h(n)
+# g(n) is cost to reach node from start node. 
+# h(n) is estimated cost to reach goal from node.
+
+# Store distances between cities in order to calculate g(n) and estimate h(n)
+# Store sld distance for each city in order to estimate h(n) by comparing f(n) with h(n)
+# straight line distance (sld) is between each city and goal city, Bucharest
 map = {
     'Arad': ['Zerind', 'Timisoara', 'Sibiu'],
     'Zerind': ['Arad', 'Oradea'],
@@ -24,6 +31,28 @@ map = {
     'London': ['Liverpool', 'Manchester'],  # For checking if "city not found" portion works
     'Manchester': ['Liverpool', 'London'],  # For checking if "city not found" portion works
     'Liverpool': ['Manchester', 'London'],  # For checking if "city not found" portion works
+    'sld': {
+        'Arad': 366,
+        'Bucharest': 0,
+        'Craiova': 160,
+        'Drobeta': 242,
+        'Eforie': 161,
+        'Fagaras': 176,
+        'Giurgiu': 77,
+        'Hirsova': 151,
+        'Iasi': 226,
+        'Lugoj': 244,
+        'Mehadia': 241,
+        'Neamt': 234,
+        'Oradea': 380,
+        'Pitesti': 100,
+        'Rimnicu Vilcea': 193,
+        'Sibiu': 253,
+        'Timisoara': 329,
+        'Urziceni': 80,
+        'Vaslui': 199,
+        'Zerind': 374
+    }
 }
 
 # To calculate cost
@@ -80,7 +109,38 @@ while True:
             break  # Break the loop as we have already reached the goal city
         bfs_search_output.append(current_city)  # Else, just add the current city to the list and continue
 
+        # calculate f(n) = g(n) + h(n) here, where g is sum of inter-city distances to get to current node, and h is
+        # straight line distance value for current node. verify if correct.
+        #print(f'{current_city}, sld = {map["sld"][current_city]}');
+        print('- - - - - - - - - - - - - - - - - - - - - -')
+        print(f'current_city = {current_city}')
+        frontiersDistances = {}
+        gn = 0
         for frontier in map[current_city]:  # Explore the frontier (child nodes) of the current city
+            
+            # Print the distance between current city and frontier city
+            currentAndLastCity = (current_city, frontier)
+            currentAndLastCity2 = (frontier, current_city)
+
+            # calculate A-star f(n) = g(n) + h(n)
+           
+            if currentAndLastCity in cost:
+                gn = cost[currentAndLastCity]
+            elif currentAndLastCity2 in cost:
+                gn = cost[currentAndLastCity2]
+            hn = map["sld"][frontier]
+
+            # create a dictionary with frontier cities and distance from current city distances
+            frontiersDistances[frontier] = gn
+            # sort distances to frontiers in ascending order
+            sorted_frontiers = sorted(frontiersDistances.items(), key=lambda x: x[1])
+
+            print(f'frontier = {frontier}')
+            print(f'gn ({gn}) + hn ({hn}) = {gn + hn}')
+            #print(f"gn = {sorted_frontiers[0][1]}")
+            #print(gn)
+            #print(f"hn = {hn}")
+
             if not visited_cities[frontier]:  # Proceed only if the frontier has not been visited before
                 visited_cities[frontier] = True  # Mark the frontier as visited to avoid infinite loops
                 parent[frontier] = current_city  # Set the current city as the parent of the frontier
