@@ -1,3 +1,4 @@
+from queue import Queue
 from queue import PriorityQueue
 
 # A-star defined: f(n) = g(n) + h(n)
@@ -89,6 +90,9 @@ visited_cities[start_city] = True   # Mark Arad as a visited city to avoid infin
 priority_queue.put((0, start_city))   # Put the starting city in the priority queue with f(n) = 0
     # Parent city remains Null for the starting city
 
+# Set the goalcity_cost to a large value as we will use this to set parent node of the goal city
+goalcity_cost = 100000
+
 # Loop to assign parent and child node by implementing A* search algorithm
 while True:
 
@@ -97,29 +101,48 @@ while True:
         break
 
     else:
-        current_cost, current_city = priority_queue.get()  # Pops and the first element of the priority queue
+        current_fn, current_city = priority_queue.get()  # Pops and the first element of the priority queue
                                                         # And returns it as the current_city along with its f(n) value
-        print(current_cost)
+        if current_city != goal_city:
+            print(f"City selected for expansion and its f(n): {current_city} : {current_fn}")
+        else:
+            print("Destination City (Bucharest) has been reached with f(n) =", current_fn)
+
         if (current_city == goal_city):  # Check if the current city is the goal city, i.e., Bucharest
             astar_search_output.append((current_city))  # If so, add this to the search output list
             break  # Break the loop as we have already reached the goal city
         astar_search_output.append(current_city)  # Else, just add the current city to the list and continue
 
         for frontier in map[current_city]:  # Explore the frontier (child nodes) of the current city
-            city_order1 = (current_city, frontier)  # To find the cost of two adjacent cities in the path
-            city_order2 = (frontier, current_city)  # Two variables as the cities might be in different order
-            if city_order1 in cost:
-                gn = cost[city_order1]
-            elif city_order2 in cost:
-                gn = cost[city_order2]
-            hn = heuristic_val[frontier]    # Find the value of hn (Heuristic value)
-            fn = gn + hn    # Calculate the value of fn
+
             # Proceed only if the frontier has not been visited before and if the go
-            if not visited_cities[frontier]:  # Proceed only if the frontier has not been visited before
-                visited_cities[frontier] = True  # Mark the frontier as visited to avoid infinite loops
-                parent[frontier] = current_city  # Set the current city as the parent of the frontier
-                priority_queue.put((fn, frontier))  # Enqueue the frontier to the queue according to the value of fn
+           if not visited_cities[frontier]:  # Proceed only if the frontier has not been visited before
+                city_order1 = (current_city, frontier)  # To find the cost of two adjacent cities in the path
+                city_order2 = (frontier, current_city)  # Two variables as the cities might be in different order
+                if city_order1 in cost:
+                    gn = cost[city_order1]
+                elif city_order2 in cost:
+                    gn = cost[city_order2]
+                hn = heuristic_val[frontier]  # Find the value of hn (Heuristic value)
+                if parent[current_city] is None:
+                    fn = gn + hn  # Calculate the value of fn for the start city
+                else:
+                    fn = current_fn - heuristic_val[current_city] + gn + hn
+                    # f(n) of a frontier = f(n) of the current city - heuristic val of current city + gn + hn
+                #print(fn, frontier)
+                if frontier != goal_city:   # Check if frontier is goal city or not
+                    visited_cities[frontier] = True  # Mark the frontier as visited to avoid infinite loops
+                    parent[frontier] = current_city  # Set the current city as the parent of the frontier
+                    priority_queue.put((fn, frontier))  # Enqueue the frontier to the queue according to the value of fn
                 # And continue the algorithm
+                else:   # If the frontier is the goal city
+                    if (fn < goalcity_cost):
+                        parent[frontier] = current_city
+                        # Assign the current city as the parent of the frontier if the f(n) value is less than the
+                        # value attained before i.e. it is the optimal path
+                        goalcity_cost = fn  # Set the current f(n) value as the new goalcity_cost
+                    priority_queue.put((fn, frontier))
+
 
 
 if isCityFound == False:    # Check if the city has been found or not
@@ -127,7 +150,7 @@ if isCityFound == False:    # Check if the city has been found or not
     exit()      # Exit the program if the city has not been found
 
 path = []   # Create empty list to display the shortest path
-total_cost = 0
+
 # Loop to find the shortest path
 while goal_city is not None:    # Continue till the goal city does not exist
     path.append(goal_city)      # Add the current goal_city to the path
@@ -136,18 +159,9 @@ path.reverse()  # Reverse the list
 print("\nThe shortest path using A* search algorithm is:")
 print(path)
 
-# To calculate cost of the path
-total_cost = 0
-size = len(path)
-for i in range(0, size - 1):
-    cities_order1 = (path[i], path[i + 1])  # To find the cost of two adjacent cities in the path
-    cities_order2 = (path[i + 1], path[i])  # Two variables as the cities might be in different order
-    if cities_order1 in cost:
-        total_cost = total_cost + cost[cities_order1]
-    elif cities_order2 in cost:
-        total_cost = total_cost + cost[cities_order2]
-
-print("\nTotal cost =", total_cost)
+# The while loop terminated at current_city == goal_city
+# Therefore the current fn is the cost of the path
+print("\nTotal cost =", current_fn)
 
 print("\nThe cities visited by the algorithm during the search were:")
 print(astar_search_output)
