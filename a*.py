@@ -163,5 +163,7 @@ print(path)
 # Therefore the current fn is the cost of the path
 print("\nTotal cost =", current_fn)
 
+print("\nThe number of cities visited by the algorithm before the goal city was found: ", len(astar_search_output))
+
 print("\nThe cities visited by the algorithm during the search were:")
 print(astar_search_output)
