@@ -113,5 +113,7 @@ for i in range(0, size - 1):
 
 print("\nTotal cost =", total_cost)
 
+print("\nThe number of cities visited by the algorithm before the goal city was found: ", len(bfs_search_output))
+
 print("\nThe cities visited by the algorithm during the search were:")
 print(bfs_search_output)
