@@ -107,5 +107,7 @@ for i in range(0, size - 1):
         total_cost = total_cost + cost[cities_order2]
 print("\nTotal cost =", total_cost)
 
+print("\nThe number of cities visited by the algorithm before the goal city was found: ", len(dfs_output))
+
 print("\nThe cities visited by the algorithm during the search were:")
 print(dfs_output)
